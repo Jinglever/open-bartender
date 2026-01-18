@@ -100,5 +100,36 @@ graph TD
 *   **Input Simulation**: We generate input events (`CGEventPost`). This requires the same Accessibility permission we already have.
 *   **Network**: Zero network access required for core function.
 
+## 6. Global Hotkey Implementation
+*   **Problem**: Capture keyboard shortcuts even when our app is not focused.
+*   **Solution**: Use `NSEvent.addGlobalMonitorForEvents(matching: .keyDown)`.
+    *   This works for Accessibility-trusted apps.
+    *   Monitor for specific key combos (e.g., `Cmd+Opt+Space`).
+    *   *Alternative*: `CGEventTap` for lower-level capture (more reliable but more complex).
+*   **Registration**: Store user-configurable hotkey in `UserDefaults`. Default: `Cmd+Opt+Space`.
+
+## 7. Notch & Menu Bar Positioning
+*   **Menu Bar Height Detection**:
+    *   `let menuBarHeight = NSApp.mainMenu?.menuBarHeight ?? 24`
+    *   Or: `NSScreen.main!.frame.height - NSScreen.main!.visibleFrame.height - NSScreen.main!.visibleFrame.origin.y`
+*   **Notch Detection**:
+    *   Check `NSScreen.main?.safeAreaInsets` (macOS 12+).
+    *   If `safeAreaInsets.top > 0`, a notch is present.
+    *   **Notch Width**: Approximately 200px centered. Our Shelf should avoid this zone or position entirely below it.
+*   **Shelf Positioning Formula**:
+    *   `shelfY = screenHeight - menuBarHeight - shelfHeight - 4` (4px gap for visual separation).
+    *   If notch present: `shelfY = screenHeight - menuBarHeight - notchHeight - shelfHeight`.
+
+## 8. Click Pass-Through Sequence (Detailed)
+When user clicks on a replica icon in the Secondary Shelf:
+1.  **Hide Mask Window**: Temporarily set `maskWindow.orderOut(nil)` to reveal the original icon.
+2.  **Hide Shelf Window**: `shelfWindow.orderOut(nil)` so it doesn't block.
+3.  **Simulate Click**:
+    *   Calculate original icon's center point from Scanner data.
+    *   Create `CGEvent` for mouse-down and mouse-up at that point.
+    *   Post events via `CGEventPost(.cghidEventTap, event)`.
+4.  **Wait for Menu**: The original app's menu will appear at the icon's location.
+5.  **Restore UI**: After a short delay (e.g., 100ms) or on next mouse-down outside the menu, bring Mask and Shelf windows back.
+
 ---
-*Status: Draft Design*
+*Status: Design Complete - Ready for Implementation*
