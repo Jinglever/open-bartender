@@ -64,11 +64,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if preferencesWindow == nil {
             let view = PreferencesView()
             preferencesWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 450, height: 350),
-                styleMask: [.titled, .closable, .miniaturizable],
+                contentRect: NSRect(x: 0, y: 0, width: 420, height: 500),
+                styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
                 backing: .buffered, defer: false)
             preferencesWindow?.center()
             preferencesWindow?.title = "OpenBartender Preferences"
+            preferencesWindow?.titlebarAppearsTransparent = true
+            preferencesWindow?.isMovableByWindowBackground = true
+            preferencesWindow?.backgroundColor = .clear // Important for transparency
             preferencesWindow?.contentView = NSHostingView(rootView: view)
             preferencesWindow?.isReleasedWhenClosed = false
             // Make window float on top so it doesn't disappear
