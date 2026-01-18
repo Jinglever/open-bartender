@@ -9,7 +9,7 @@ struct PreferencesView: View {
             HStack {
                 Image(systemName: "menubar.rectangle")
                     .font(.title2)
-                Text("Bartender Clone")
+                Text("OpenBartender")
                     .font(.title2)
                     .fontWeight(.semibold)
             }

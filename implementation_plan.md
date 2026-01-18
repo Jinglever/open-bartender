@@ -1,66 +1,85 @@
-# Implementation Plan - "Bartender" Native Clone
+# Implementation Plan - OpenBartender
 
-This plan outlines the steps to build a native macOS menu bar manager similar to Bartender/Hidden Bar.
+A native macOS menu bar manager to completely replace the official Bartender app.
+**Goal**: Replicate Bartender 6 functionality using public APIs where possible, focusing on a premium, modern SwiftUI interface.
 
-## Core Architecture
-This will be a **Swift** project using **AppKit** (backend logic) and **SwiftUI** (Preferences/UI).
+## 🎯 Core Features & Roadmap
 
-### 1. The Strategy: "The Splitter Method"
-Mimicking the robust behavior of open-source tools like *Hidden Bar* or *Dozer* is the most viable path without reverse-engineering private Apple frameworks.
-1.  **The Splitter**: We create a native `NSStatusItem` (the vertical pipe `|`).
-2.  **User Setup**: The user Command+Drags legitimate system icons to the *left* or *right* of our Splitter.
-3.  **Hiding Mechanism**:
-    *   We use the **Accessibility API** (`AXUIElement`) to scan the Menu Bar's UI hierarchy.
-    *   We identify the position of our Splitter.
-    *   We identify all items to the *left* of the splitter.
-    *   **Action**: There is no public API to "hide" another app's item.
-        *   *Approach A (Masking)*: We draw a window allowing clicks to pass through? No, looks bad.
-        *   *Approach B (Native Collapse)*: This requires private APIs.
-        *   *Approach C (The "Bartender" Way)*: We locate the icons, take a snapshot of them (requiring Screen Recording permission), display them in a **secondary bar** (our own window), and then mask the original area.
+### Phase 1: Foundation (Current Status: ✅)
+- [x] **Project Skeleton:** Swift Package Manager + AppKit/SwiftUI hybrid.
+- [x] **Permissions:** Accessibility (AX) permission handling.
+- [x] **Scanner Engine:**
+    - Detects status bar items from *all* running apps.
+    - Filters legitimate status items (ignoring app menus).
+    - Tracks position (X/Y) and dimensions.
+- [x] **Basic UI:** Floating debug window (Preferences) + Status Bar Icon.
+- [x] **Git Setup:** Repository initialized and pushed to GitHub.
 
-**Target for MVP**: We will build **Approach C (The Secondary Bar)** foundation.
-1.  **Permissions Engine**: Request Accessibility & Screen Recording permissions.
-2.  **Scanner**: A service that iterates current Menu Bar items.
-3.  **Secondary Bar**: A floating `NSPanel` that can host "hidden" items.
+### Phase 2: The "Bartender Bar" (Floating Shelf)
+The signature feature: a secondary bar to hold "hidden" items.
+- [ ] **Floating Panel:** Convert debug window to a transparent, pill-shaped `NSPanel`.
+- [ ] **Positioning:** Automatically anchor the panel below the menu bar notch area.
+- [ ] **Styling:** Implement Glassmorphism (`NSVisualEffectView`) and rounded corners.
+- [ ] **Animations:** Smooth slide-in/slide-out transitions.
 
-## Step-by-Step Implementation
+### Phase 3: Interaction & Hiding Logic
+- [ ] **"Hiding" Implementation:**
+    - *Strategy A (Visual)*: Draw a matching background window over "hidden" items in the main bar.
+    - *Strategy B (Replication)*: Display clones of the icons in our Secondary Bar (using Screen Capture or Accessibility snapshots).
+- [ ] **Toggle Logic:** Click main icon -> Show Secondary Bar.
+- [ ] **Global Hotkey:** `Cmd+Option+Space` (or similar) to toggle the bar.
 
-### Phase 1: Project Skeleton & Permissions
-- Initialize a standard Swift Package Manager executable or standard App structure.
-- create `MainApp.swift` (App lifecycle).
-- create `PermissionsManager.swift` to handle:
-    - `AXIsProcessTrusted()` (Accessibility)
-    - `CGDisplayStream` check (Screen Recording)
+### Phase 4: Advanced Features (Bartender 6 Parity)
+- [ ] **Triggers:**
+    - Battery Monitor (show when specific % or charging).
+    - Network Monitor (Wi-Fi status).
+- [ ] **Styling Options:**
+    - Custom colors/gradients for the bar.
+    - Border width and color settings.
+    - Shadow and corner radius adjustments.
+- [ ] **Search:** "Quick Search" UI to type and filter visible apps.
+- [ ] **Spacers:** Insert custom empty spaces or text/emoji separators.
 
-### Phase 2: Menu Bar Scanner (The Hard Part)
-- Create `MenuBarScanner.swift`.
-- Use `CoreGraphics` to find the Menu Bar window.
-- Use `AXUIElementCreateSystemWide` -> Find `AXMenuBar` -> List `AXChildren`.
-- Extract frames (positions/sizes) of every status item.
+## 🏗 Technical Architecture
 
-### Phase 3: The "Bartender Bar" (UI)
-- Create a floating, borderless `NSPanel` (SwiftUI View).
-- This window will act as the "Secondary Shelf" where hidden items live.
+### 1. MenuBarScanner (Core)
+- **Responsibility:** Continuously reads `AXUIElement` hierarchy of `com.apple.controlcenter` and `com.apple.systemuiserver`.
+- **Output:** A stream of `MenuBarItem` models with live frames (CGRect).
+- **Optimization:** Debounce scanning to prevent high CPU usage.
 
-### Phase 4: Preferences
-- A Settings window to toggle aggressive hiding, auto-hide delay, etc.
+### 2. OverlayWindow (The Bar)
+- **Type:** `NSPanel` with `styleMask = [.borderless, .nonactivatingPanel]`.
+- **Level:** `.floating` (above normal windows) or `.popUpMenu` (extremely high).
+- **View:** SwiftUI `hostingController` with visual effect background.
 
-## Limitations
-- **Private APIs**: Truly Hiding (removing) items often requires private calls which are brittle. We will focus on *detecting* them first.
-- **Sandboxing**: This app *cannot* be sandboxed if it wants to control other apps. It must be distributed outside the Mac App Store.
+### 3. MaskingService (The Hider)
+- **Challenge:** macOS doesn't let us programmatically *remove* third-party icons.
+- **Solution:** We will likely use a "Mask Window" roughly the color of the menu bar to visually obscure items, while reproducing them in our floating bar.
 
-## Directory Structure
+## 📦 Directory Structure
 ```text
-BartenderClone/
+OpenBartender/
 ├── Sources/
 │   ├── App/
-│   │   ├── BartenderCloneApp.swift
+│   │   ├── OpenBartenderApp.swift  # Entry & Status Item
 │   │   └── AppDelegate.swift
 │   ├── Core/
-│   │   ├── MenuBarScanner.swift     # Accessibility Logic
-│   │   └── PermissionsManager.swift
-│   └── UI/
-│       ├── BartenderBarWindow.swift # The floating shelf
-│       └── PreferencesView.swift
+│   │   ├── MenuBarScanner.swift    # AX Logic
+│   │   ├── PermissionsManager.swift
+│   │   └── HotkeyManager.swift     # Global Shortcuts (TODO)
+│   ├── UI/
+│   │   ├── BartenderBarView.swift  # The floating shelf (TODO)
+│   │   └── SettingsView.swift      # Preferences
+│   └── Services/
+│       └── TriggerService.swift    # Battery/Network logic (TODO)
 └── Package.swift
 ```
+
+## ⚠️ Key Challenges
+1.  **Notch Handling:** On MacBook Air/Pro, we must respect the notch area.
+2.  **Private APIs:** We avoid private APIs to ensure stability, meaning we rely on Accessibility hacks rather than true system injection.
+3.  **Permissions:** Requires Accessibility + potentially Screen Recording (for icon snapshots).
+
+## 🔗 Resources
+- **Repo:** [github.com/Jinglever/open-bartender](https://github.com/Jinglever/open-bartender)
+- **Inspiration:** [Bartender 6](https://www.macbartender.com/)

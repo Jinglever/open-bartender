@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "BartenderClone",
+    name: "OpenBartender",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "BartenderClone",
+            name: "OpenBartender",
             dependencies: [],
             path: "Sources"
         )

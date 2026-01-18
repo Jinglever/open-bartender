@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 @main
-struct BartenderCloneApp: App {
+struct OpenBartenderApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
@@ -18,7 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var preferencesWindow: NSWindow?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("Bartender Clone Started")
+        print("OpenBartender Started")
         
         // 1. Create Status Bar Item (more reliable than MenuBarExtra)
         setupStatusItem()
@@ -44,11 +44,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         // Set autosave name so macOS remembers position after user drags it
-        statusItem?.autosaveName = "com.jinglever.BartenderClone.statusItem"
+        statusItem?.autosaveName = "com.jinglever.OpenBartender.statusItem"
         
         if let button = statusItem?.button {
             // Use text title which is more visible
-            button.title = "☰ BC"
+            button.title = "☰ OB"
         }
         
         // Create the menu
@@ -68,7 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered, defer: false)
             preferencesWindow?.center()
-            preferencesWindow?.title = "Bartender Clone Preferences"
+            preferencesWindow?.title = "OpenBartender Preferences"
             preferencesWindow?.contentView = NSHostingView(rootView: view)
             preferencesWindow?.isReleasedWhenClosed = false
             // Make window float on top so it doesn't disappear

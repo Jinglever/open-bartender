@@ -5,7 +5,7 @@
 swift build -c release
 
 # Create the App Bundle Structure
-APP_NAME="BartenderClone"
+APP_NAME="OpenBartender"
 BUNDLE_PATH=".build/release/$APP_NAME.app"
 mkdir -p "$BUNDLE_PATH/Contents/MacOS"
 mkdir -p "$BUNDLE_PATH/Contents/Resources"
