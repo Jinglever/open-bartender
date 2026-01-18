@@ -67,4 +67,58 @@ Items should appear *only when relevant*.
 *   **Accessibility Permission**: Used to determine location of clicks.
 
 ---
-*Drafted: Jan 19, 2026*
+
+## ✅ Acceptance Criteria & Test Plan
+
+These criteria define "Done" for each feature and serve as the basis for automated and manual testing.
+
+### 1. Menu Bar Scanner (Core Engine)
+*   **AC1.1**: Scanner MUST detect 100% of standard `NSStatusItem` icons (e.g., Wi-Fi, Clock, Spotlight).
+*   **AC1.2**: Scanner MUST detect third-party apps (e.g., Docker, Notion, Weak Auras).
+*   **AC1.3**: Scanner MUST correctly filter out non-status items (e.g., "File", "Edit" menus).
+*   **AC1.4 (Performance)**: Scanning pass must complete in < 50ms (measured from `AXUIElement` traversal to data model update).
+*   **AC1.5 (Reactive)**: Scanner must update the model within 2 seconds when a new app is launched or quit.
+
+### 2. Secondary Shelf (UI/UX)
+*   **AC2.1**: Clicking the OpenBartender icon (`☰`) MUST toggle the shelf visibility.
+*   **AC2.2**: The shelf MUST appear visually *below* the menu bar, never overlapping system menus.
+*   **AC2.3**: On Macs with a notch, the shelf MUST appear below the notch area.
+*   **AC2.4**: Clicking outside the shelf MUST close it (focus loss behavior).
+*   **AC2.5**: The shelf MUST support clicking on the items inside it (pass-through clicks to the actual app).
+
+### 3. Smart Triggers (Logic)
+*   **AC3.1 (Battery)**:
+    *   *Given* Battery trigger is ON,
+    *   *When* battery level > 20% AND not charging,
+    *   *Then* Battery icon is HIDDEN.
+    *   *When* battery level <= 20% OR charging,
+    *   *Then* Battery icon is SHOWN.
+*   **AC3.2 (Wi-Fi)**:
+    *   *Given* Wi-Fi trigger is ON,
+    *   *When* Wi-Fi is Connected,
+    *   *Then* icon is HIDDEN.
+    *   *When* Wi-Fi is Disconnected/Searching,
+    *   *Then* icon is SHOWN.
+
+### 4. Search & Interaction
+*   **AC4.1**: Pressing the Hotkey (e.g., `Cmd+Opt+Space`) MUST open the Quick Search bar.
+*   **AC4.2**: Typing "Wifi" and pressing Enter MUST simulate a click on the Wi-Fi icon.
+*   **AC4.3**: Navigation via Arrow Keys in the search result list MUST be supported.
+
+### 5. Performance Thresholds
+*   **AC5.1**: CPU usage at idle (background mode) MUST be < 0.5%.
+*   **AC5.2**: Memory footprint MUST be < 50MB.
+*   **AC5.3**: No UI jank during open/close animations (min 60fps).
+
+## 🧪 Testing Strategy
+1.  **Unit Tests**:
+    *   Verify `MenuBarScanner` parsing logic with mock `AXUIElement` data.
+    *   Test `TriggerService` state machines (Battery/Network logic).
+2.  **UI/Integration Tests**:
+    *   Use `XCTest` to verify window existence and hierarchy.
+    *   *Note*: Testing actual menu bar clicks requires Accessibility Permissions in CI/CD, which is complex. Manual "Smoke Tests" are required for click-through verification.
+3.  **Manual Acceptance (The "Smoke Test")**:
+    *   Launch App -> Check Icon Visible.
+    *   Click Icon -> Check Shelf Visible.
+    *   Open 5 apps -> Verify all 5 appear in scanner list.
+    *   Quit App -> Verify menu bar returns to standard state (Safety Fallback).
