@@ -30,10 +30,17 @@ struct ShelfView: View {
     }
     
     private func handleItemClick(_ item: MenuBarItemBounds) {
-        // TODO: Implement click pass-through (Phase 3)
-        // For now, just log and hide the shelf
-        print("Shelf: Clicked on \(item.appOwner)")
+        print("Shelf: Clicked on \(item.appOwner) at \(item.frame)")
+        
+        // 1. Hide the shelf first so it doesn't block the click
         ShelfWindowController.shared.hide()
+        
+        // 2. Wait a moment for the shelf to disappear, then simulate click
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            ClickSimulator.shared.click(at: item.frame) {
+                print("Shelf: Click pass-through completed for \(item.appOwner)")
+            }
+        }
     }
 }
 

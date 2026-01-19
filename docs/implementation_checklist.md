@@ -91,11 +91,11 @@ A step-by-step guide to building OpenBartender. Check off each task as completed
 - [x] Handle failed captures gracefully (show placeholder)
 
 ### 3.3 Click Pass-Through
-- [ ] Create `ClickSimulator.swift`
-- [ ] Implement `CGEvent` mouse click generation
-- [ ] On shelf item click: Hide shelf temporarily
-- [ ] Simulate click at original icon coordinates
-- [ ] Restore shelf after delay (100ms)
+- [x] Create `ClickSimulator.swift`
+- [x] Implement `CGEvent` mouse click generation
+- [x] On shelf item click: Hide shelf temporarily
+- [x] Simulate click at original icon coordinates
+- [x] Restore shelf after delay (100ms)
 
 ---
 
