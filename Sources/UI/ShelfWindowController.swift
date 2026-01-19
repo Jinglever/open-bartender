@@ -107,9 +107,9 @@ class ShelfWindowController: NSObject {
         let contentView = ShelfView()
         let hostingView = NSHostingView(rootView: contentView)
         
-        // Calculate initial size
-        let shelfWidth: CGFloat = 300
-        let shelfHeight: CGFloat = 50
+        // Calculate initial size - wider and taller for better icon display
+        let shelfWidth: CGFloat = 400
+        let shelfHeight: CGFloat = 70
         
         // Create borderless panel
         let panel = NSPanel(

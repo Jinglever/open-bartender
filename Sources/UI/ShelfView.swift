@@ -42,19 +42,32 @@ struct ShelfItemView: View {
     let item: MenuBarItemBounds
     let isHovered: Bool
     
+    @State private var capturedImage: NSImage?
+    
     var body: some View {
-        VStack(spacing: 2) {
-            // Placeholder icon (will be replaced with captured image in Phase 3)
+        VStack(spacing: 4) {
+            // Icon display
             ZStack {
+                // Hover background
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(isHovered ? Color.white.opacity(0.2) : Color.white.opacity(0.1))
-                    .frame(width: 28, height: 28)
+                    .fill(isHovered ? Color.white.opacity(0.15) : Color.clear)
+                    .frame(width: 32, height: 32)
                 
-                Image(systemName: "app.fill")
-                    .font(.system(size: 14))
-                    .foregroundColor(.primary.opacity(0.6))
+                if let nsImage = capturedImage {
+                    // Show captured icon - use interpolation for better quality
+                    Image(nsImage: nsImage)
+                        .interpolation(.high)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 28, maxHeight: 24)
+                } else {
+                    // Fallback placeholder
+                    Image(systemName: "app.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(.primary.opacity(0.4))
+                }
             }
-            .scaleEffect(isHovered ? 1.1 : 1.0)
+            .scaleEffect(isHovered ? 1.08 : 1.0)
             
             // App name (truncated)
             Text(shortName(item.appOwner))
@@ -69,6 +82,25 @@ struct ShelfItemView: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(isHovered ? Color.white.opacity(0.1) : Color.clear)
         )
+        .onAppear {
+            captureIcon()
+        }
+    }
+    
+    private func captureIcon() {
+        print("ShelfItemView: Attempting to capture icon for \(item.appOwner)")
+        // Capture on background thread to avoid blocking UI
+        DispatchQueue.global(qos: .userInitiated).async {
+            let image = IconCaptureService.shared.captureIcon(at: item.frame, forApp: item.appOwner)
+            DispatchQueue.main.async {
+                if image != nil {
+                    print("ShelfItemView: Got image for \(item.appOwner)")
+                } else {
+                    print("ShelfItemView: No image returned for \(item.appOwner)")
+                }
+                self.capturedImage = image
+            }
+        }
     }
     
     /// Shortens app name for display

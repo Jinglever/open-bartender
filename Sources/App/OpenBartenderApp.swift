@@ -28,12 +28,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !permissions.isAccessibilityTrusted {
             print("Accessibility not trusted. prompting...")
             permissions.promptForAccessibility()
+        } else {
+            print("Accessibility: ✅ Trusted")
         }
         
-        // 3. Start the Scanner
+        // 3. Check Screen Recording permission
+        if !permissions.isScreenRecordingAllowed {
+            print("Screen Recording not allowed. Requesting...")
+            permissions.requestScreenRecordingPermission()
+        } else {
+            print("Screen Recording: ✅ Allowed")
+        }
+        
+        // 4. Start the Scanner
         MenuBarScanner.shared.startScanning()
         
-        // 4. Auto-open preferences on launch (helpful when menu bar icon is hidden by notch)
+        // 5. Auto-open preferences on launch (helpful when menu bar icon is hidden by notch)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.openPreferences()
         }

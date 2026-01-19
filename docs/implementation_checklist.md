@@ -75,20 +75,20 @@ A step-by-step guide to building OpenBartender. Check off each task as completed
 
 ---
 
-## Phase 3: Icon Capture & Display
+## Phase 3: Icon Capture & Display ✅
 
 ### 3.1 Screen Capture Setup
-- [ ] Request Screen Recording permission on first use
-- [ ] Create `IconCaptureService.swift`
-- [ ] Implement `CGWindowListCreateImage` for specific rect
-- [ ] Capture icon at coordinates from Scanner
-- [ ] Convert `CGImage` to SwiftUI `Image`
+- [x] Request Screen Recording permission on first use
+- [x] Create `IconCaptureService.swift`
+- [x] Implement `CGWindowListCreateImage` for specific rect
+- [x] Capture icon at coordinates from Scanner
+- [x] Convert `CGImage` to SwiftUI `Image`
 
 ### 3.2 Live Icon Display
-- [ ] Replace placeholder icons with captured images
-- [ ] Cache captured images (avoid re-capture every frame)
+- [x] Replace placeholder icons with captured images
+- [x] Cache captured images (avoid re-capture every frame)
 - [ ] Invalidate cache when Scanner detects position change
-- [ ] Handle failed captures gracefully (show placeholder)
+- [x] Handle failed captures gracefully (show placeholder)
 
 ### 3.3 Click Pass-Through
 - [ ] Create `ClickSimulator.swift`
