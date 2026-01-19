@@ -49,15 +49,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem?.button {
             // Use text title which is more visible
             button.title = "☰ OB"
+            
+            // Add click action for left-click (toggle shelf)
+            button.action = #selector(statusBarButtonClicked(_:))
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            button.target = self
         }
+    }
+    
+    @objc func statusBarButtonClicked(_ sender: NSStatusBarButton) {
+        guard let event = NSApp.currentEvent else { return }
         
-        // Create the menu
-        let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(openPreferences), keyEquivalent: ","))
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q"))
-        
-        statusItem?.menu = menu
+        if event.type == .rightMouseUp {
+            // Right-click: Show menu
+            let menu = NSMenu()
+            menu.addItem(NSMenuItem(title: "Show Shelf", action: #selector(toggleShelf), keyEquivalent: ""))
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(openPreferences), keyEquivalent: ","))
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q"))
+            
+            statusItem?.menu = menu
+            statusItem?.button?.performClick(nil)
+            // Clear menu after showing so left-click works again
+            DispatchQueue.main.async {
+                self.statusItem?.menu = nil
+            }
+        } else {
+            // Left-click: Toggle shelf
+            toggleShelf()
+        }
+    }
+    
+    @objc func toggleShelf() {
+        ShelfWindowController.shared.toggle()
     }
     
     @objc func openPreferences() {

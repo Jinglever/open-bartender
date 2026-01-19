@@ -43,34 +43,34 @@ A step-by-step guide to building OpenBartender. Check off each task as completed
 
 ---
 
-## Phase 2: The Secondary Shelf (The Bar)
+## Phase 2: The Secondary Shelf (The Bar) ✅
 
 ### 2.1 Shelf Window Infrastructure
-- [ ] Create `ShelfWindowController.swift`
-- [ ] Create borderless `NSPanel` with `.nonactivatingPanel` style
-- [ ] Set window level to `.popUpMenu` (above menu bar)
-- [ ] Implement `NSVisualEffectView` background (blur)
-- [ ] Add rounded corners (16pt radius)
-- [ ] Add subtle shadow
+- [x] Create `ShelfWindowController.swift`
+- [x] Create borderless `NSPanel` with `.nonactivatingPanel` style
+- [x] Set window level to `.popUpMenu` (above menu bar)
+- [x] Implement `NSVisualEffectView` background (blur)
+- [x] Add rounded corners (16pt radius)
+- [x] Add subtle shadow
 
 ### 2.2 Shelf Positioning
-- [ ] Detect menu bar height via `NSScreen.visibleFrame`
-- [ ] Detect notch presence via `safeAreaInsets.top`
-- [ ] Calculate shelf Y position (below notch if present)
-- [ ] Position shelf horizontally (right-aligned with menu bar icons)
+- [x] Detect menu bar height via `NSScreen.visibleFrame`
+- [x] Detect notch presence via `safeAreaInsets.top`
+- [x] Calculate shelf Y position (below notch if present)
+- [x] Position shelf horizontally (right-aligned with menu bar icons)
 - [ ] Handle multi-monitor scenarios
 
 ### 2.3 Shelf Content View
-- [ ] Create `ShelfView.swift` (SwiftUI)
-- [ ] Display horizontal list of "hidden" items
-- [ ] Show item icons (placeholder images initially)
-- [ ] Add hover highlight effect
-- [ ] Add smooth fade-in/fade-out animation
+- [x] Create `ShelfView.swift` (SwiftUI)
+- [x] Display horizontal list of "hidden" items
+- [x] Show item icons (placeholder images initially)
+- [x] Add hover highlight effect
+- [x] Add smooth fade-in/fade-out animation
 
 ### 2.4 Toggle Logic
-- [ ] Click status bar icon → Toggle shelf visibility
-- [ ] Click outside shelf → Close shelf
-- [ ] Escape key → Close shelf
+- [x] Click status bar icon → Toggle shelf visibility
+- [x] Click outside shelf → Close shelf
+- [x] Escape key → Close shelf
 - [ ] Hover mode (optional): Show on hover, hide on leave
 
 ---
